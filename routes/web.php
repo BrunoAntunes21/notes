@@ -1,11 +1,8 @@
 <?php
 
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    echo "inicio de rotas em construção";
-});
-
-Route::get('/about', function () {
-    echo "about us em construção";
-});
+Route::get('/login', [AuthController::class, 'login']);
+Route::get('/logout', [AuthController::class, 'logout']);
