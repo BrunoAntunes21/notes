@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {   //auth routes
@@ -31,13 +32,13 @@ class AuthController extends Controller
         $username=$request->input('text_username');
         $password=$request->input('text_password');
 
-        echo "OK";
-        echo '<br>';
-        echo 'login submit '.$request->input('text_username');
-        echo '<br>';
-        echo  'password submit'.$request->input('text_password');
-        echo '<br>';
-        dd($request->all());
+        //test database connection
+        try{
+            DB::connection()->getPdo();
+            echo "Database connection is successful.";
+        }catch(\PDOException $e){
+            echo "Could not connect to the database. Please check your configuration. error: ".$e->getMessage();
+        }
 
     }
 
