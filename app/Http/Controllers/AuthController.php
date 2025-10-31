@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {   //auth routes
@@ -11,14 +14,12 @@ class AuthController extends Controller
     {
         return view('login');
     }
-    public function logout(){
-        echo 'logout';
-    }
+
     public function loginSubmit(Request $request){
         //form validation
         $request->validate(//rules
             [
-            'text_username=>' => 'required|email',
+            'text_username' => 'required|email',
             'text_password' => 'required|min:6|max:16'
             ],//error menssages,
         [
@@ -32,14 +33,37 @@ class AuthController extends Controller
         $username=$request->input('text_username');
         $password=$request->input('text_password');
 
-        //test database connection
-        try{
-            DB::connection()->getPdo();
-            echo "Database connection is successful.";
-        }catch(\PDOException $e){
-            echo "Could not connect to the database. Please check your configuration. error: ".$e->getMessage();
-        }
 
+
+        //check if user exists in the database
+        $user=User::where('username',$username)->where('deleted_at',NULL)->first();
+        if(!$user){
+            return redirect()
+            ->back()
+            ->withInput()
+            ->withErrors(['login_error' => 'User Name or password is incorrect']);
+        }//check is password is correct
+        if (!Hash::check($password, $user->password)) {
+    return redirect()
+        ->back()
+        ->withInput()
+        ->withErrors(['login_error' => 'User Name or password is incorrect']);
+
+
+}
+//update last login
+        $user->last_login = Carbon::now();
+        $user->save();
+
+            session(['user' =>['id'=>$user->id, 'username' => $user->username]]);
+
+        echo 'login successful';
+
+
+    }
+    public function logout(){
+        session()->forget('user');
+        return redirect('/login');
     }
 
 }
