@@ -56,8 +56,8 @@ class AuthController extends Controller
         $user->save();
 
             session(['user' =>['id'=>$user->id, 'username' => $user->username]]);
-
-        echo 'login successful';
+        //redirect to home
+        return redirect('/');
 
 
     }
