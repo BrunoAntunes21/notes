@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Note;
 use App\Services\Operations;
 
 
@@ -12,17 +13,19 @@ class MainController extends Controller
     public function index()
     {
         //load users  notes
-        $id=session('user.id');
-        $notes=User::find($id)->notes()->get()->toArray();
+           // Verifica se o usuário está logado
+    $id = session('user.id');
 
-
-
-        //show home view;
-
-        return view('home', [
-            'notes' => $notes
-        ]);
+    if (is_null($id)) {
+        return redirect()->route('login'); // Redirecione para a página de login, se necessário
     }
+
+    // Carrega as notas do usuário
+    $notes = User::find($id)->notes()->get()->toArray();
+
+    // Retorna a view com as notas
+    return view('home', ['notes' => $notes]);
+}
 
     public function newNote()
     {
@@ -43,10 +46,19 @@ class MainController extends Controller
             'text_note.required'=>'Note is required',
             'text_note.min'=>'Note must be at least :min characters',
             'text_note.max'=>'Note must not exceed :max characters'
-        ]);
+        ]); echo "ok";
         //get user id
+        $id=session('user.id');
+
         //create new note
+        $notes=new Note();
+        $notes->user_id=$id;
+        $notes->title=$request->text_title;
+        $notes->text=$request->text_note;
+        $notes->save();
         //redirect to home
+        return redirect()->route('home');
+
     }
 
     public function editNote($id)
