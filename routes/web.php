@@ -20,6 +20,7 @@ Route::middleware([CheckIsLogged::class])->group(function () {
     //edit notes
     Route::get('/edit/{id}', [MainController::class, 'editNote'])->name('edit');
     Route::get('/delete/{id}', [MainController::class, 'deleteNote'])->name('delete');
+    Route::post('/editNoteSubmit',[MainController::class,'editNoteSubmit'])->name('editNoteSubmit');
 
 
 

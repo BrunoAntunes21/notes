@@ -39,7 +39,7 @@ class MainController extends Controller
             'text_title' => 'required|min:3|max:200',
             'text_note' => 'required|min:3|max:3000',
             //error menssages,
-        
+
             'text_title.required'=>'Tiltle is required',
             'text_title.min'=>'Note must be at least :min characters',
             'text_title.max'=>'Note must not exceed :max characters',
@@ -61,14 +61,26 @@ class MainController extends Controller
 
     }
 
-    public function editNote($id)
-    {   //decrypt id e tratamento de erro
-       // $id = $this->decryptId($id);
-       $id=Operations::decryptId($id);
-        echo "Editando anotação de id: $id";
+   public function editNote($id)
+{
+    $id = Operations::decryptId($id);
 
-
+    // Verifica se o ID é nulo após desencriptação
+    if (is_null($id)) {
+        return redirect()->route('home'); // Redireciona se o ID não for válido
     }
+
+    // Carrega a nota correspondente ao ID
+    $note = Note::find($id);
+
+    // Verifica se a nota existe
+    if (is_null($note)) {
+        return redirect()->route('home'); // Redireciona se a nota não for encontrada
+    }
+
+    // Retorna a view se a nota existir
+    return view('edit_note', ['note' => $note]);
+}
 
        public function deleteNote($id)
     {   //delete note id e tratamento de erro
