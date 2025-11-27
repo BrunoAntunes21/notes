@@ -12,8 +12,8 @@ class Operations{
 
         } catch (DecryptException $e) {
             // Decryption failed — handle appropriately (e.g., show 404 or error message)
-            return redirect()->route('home');
+            return null;
         }
-        return $id;
+        return $decrypted_id;
     }
 }
