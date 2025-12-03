@@ -81,13 +81,50 @@ class MainController extends Controller
     // Retorna a view se a nota existir
     return view('edit_note', ['note' => $note]);
 }
+    public function editNoteSubmit(Request $request){
+       // Validação do request
+        $request->validate(//rules
+           [
+           'text_title' => 'required|min:3|max:200',
+           'text_note' => 'required|min:3|max:3000',
+           //error menssages,
 
-       public function deleteNote($id)
-    {   //delete note id e tratamento de erro
-       // $id=$this->decryptId($id);
-       $id=Operations::decryptId($id);
-        echo "<h1>Deletando anotação de id= :$id<h1>";
+           'text_title.required'=>'Tiltle is required',
+           'text_title.min'=>'Note must be at least :min characters',
+           'text_title.max'=>'Note must not exceed :max characters',
+           'text_note.required'=>'Note is required',
+           'text_note.min'=>'Note must be at least :min characters',
+           'text_note.max'=>'Note must not exceed :max characters'
 
+         ]);
+         //check if note_id exists
+         if($request->note_id==null){
+            return redirect()->route('home');
+         }
+            //decrypt note id
+            $id=Operations::decryptId($request->note_id);
+            //find note by id
+            $note=Note::find($id);
+            //update note
+            $note->title=$request->text_title;
+            $note->text=$request->text_note;
+            $note->save();
+            //redirect to home
+             return redirect()->route('home');
+         //
+
+        }
+
+
+
+    public function deleteNote($id){
+        $id=Operations::decryptId($id);
+        //load note by id
+        $note=Note::find($id);
+        //show delete confirmation view
+        return view('delete_note',['note'=>$note]);
+        //return view
+       
 
     }
 
