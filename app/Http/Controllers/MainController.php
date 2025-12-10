@@ -21,7 +21,7 @@ class MainController extends Controller
     }
 
     // Carrega as notas do usuário
-    $notes = User::find($id)->notes()->get()->toArray();
+    $notes = User::find($id)->notes()->whereNull('deleted_at')->get()->toArray();
 
     // Retorna a view com as notas
     return view('home', ['notes' => $notes]);
@@ -124,7 +124,36 @@ class MainController extends Controller
         //show delete confirmation view
         return view('delete_note',['note'=>$note]);
         //return view
-       
+        
+
+
+    }
+
+    public function deleteNoteConfirm($id){
+        $id=Operations::decryptId($id);
+        //load note by id
+        $note=Note::find($id);
+    
+
+        //HARD delete
+        //$note->delete();
+
+        //soft delete
+
+        //$note->deleted_at=date('Y:m:d H:i:s');
+        //$note->save();
+
+        /*soft delete (propety in model)
+        $note->softDelete();
+        
+        ignora esse metodo está depreciado*/
+
+        $note->forcedelete();
+
+
+        //redirect
+
+        return redirect()->route('home');
 
     }
 
